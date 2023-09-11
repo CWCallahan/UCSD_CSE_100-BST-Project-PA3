@@ -13,7 +13,8 @@ using namespace std;
 /**
  * A test driver for the BST int class and class template.
  * PA1 CSE 100 2016
- * Author: Christine Alvarado and Crystina Callahan (A13070475)
+ * Authors: Christine Alvarado  
+ *          Crystina Callahan (A13070475)
  * TODO: Add more tests
  */
 int main() {
