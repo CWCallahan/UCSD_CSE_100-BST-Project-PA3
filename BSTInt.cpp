@@ -1,0 +1,183 @@
+
+#include "BSTInt.h"
+
+/* Function definitions for a int-based BST class */
+
+
+/** Default destructor.
+    Delete every node in this BST.
+*/
+BSTInt::~BSTInt() {
+  deleteAll(root);
+}
+
+/** Given a reference to a Data item, insert a copy of it in this BST.
+ *  Return  true if the item was added to this BST
+ *  as a result of this call to insert,
+ *  false if an item equal to this one was already in this BST.
+ *  Note: This function should use only the '<' operator when comparing
+ *  Data items. (should not use ==, >, <=, >=)  For the reasoning
+ *  behind this, see the assignment writeup.
+ */
+
+bool BSTInt::insert(int item)
+{
+  //an int to measure the height of this particular insert
+  //incriments with each step down and on addition of a node 
+  int tempHeight = 0;
+  
+  if (!root) {
+    root = new BSTNodeInt(item);
+    ++isize;
+    return true;
+  }
+
+  BSTNodeInt* curr = root;
+  
+  while (curr->left && curr->right) {
+    if (item < curr->data) {
+      curr = curr->left;
+      tempHeight++; 
+    }
+    else if (curr->data < item) {
+      curr = curr->right;
+      tempHeight++;
+    }
+    else {
+      return false;
+    }
+  }//
+
+  BSTNodeInt* newNode = new BSTNodeInt(item);
+  //If there are children check for proper insertion conditions
+  while (curr->left || curr->right) {
+    
+    if ( curr->left ) {
+      //When the node is smaller than left current node moves downwards
+      //and when it isn't set it to the right 
+      if (item < curr->data) { //step
+	curr = curr->left;
+	tempHeight++;
+      } else if (curr->right) {
+        curr = curr->right;
+	tempHeight++;
+      } else {  //insert
+	curr->right = newNode;
+        newNode->parent = curr;
+        ++isize;
+	tempHeight++;
+	if (tempHeight > iheight)
+	  iheight = tempHeight; 
+	//newNode->parent->print(); //uncomment to print the tree as it builds
+	return true;
+      }
+      
+    } else if (curr->right) {
+      //When the node is larger than right current node moves downwards
+      //and when it isn't set it to the left 
+      if (item > curr->data) { //step
+	curr = curr->right;
+	tempHeight++;
+      } else if (curr->left) {
+        curr = curr->left;
+	tempHeight++;	
+      } else {	//insert
+        curr->left = newNode;
+        newNode->parent = curr;
+        ++isize;
+	tempHeight++;
+	if (tempHeight > iheight)
+	  iheight = tempHeight;
+	//newNode->parent->print(); //uncomment to print the tree as it builds
+        return true;
+      }
+    }
+  }//end of while
+
+  // Ready to insert
+  if (item < curr->data) {
+    curr->left = newNode;
+    newNode->parent = curr;
+  }
+  else {
+    curr->right = newNode;
+    newNode->parent = curr;
+  }
+
+  ++isize;
+  tempHeight++;
+  if (tempHeight > iheight)
+    iheight = tempHeight;
+  //newNode->parent->print(); //uncomment to print the tree as it builds
+  return true;
+
+}
+
+
+/** Find a Data item in the BST.
+ *  Return true if the item is in the BST or false otherwise
+ *  Note: This function should use only the '<' operator when comparing
+ *  Data items. (should not use ==, >, <=, >=).  For the reasoning
+ *  behind this, see the assignment writeup.
+ */
+bool BSTInt::find(int item) const
+{
+  BSTNodeInt* curr = root;
+  while (curr) {
+    if (curr->data < item) {
+      curr = curr->right;
+    }
+    else if (item < curr->data) {
+      curr = curr->left;
+    }
+    else {
+      return true;
+    }
+  }
+  return false;
+}
+
+  
+/** Return the number of items currently in the BST.
+ */
+unsigned int BSTInt::size() const 
+{
+  return isize;
+}
+
+  
+/** Return the height of the BST.
+    Height of tree with just root node is 0
+ */
+unsigned int BSTInt::height() const
+{
+  return iheight;
+}
+
+
+/** Return true if the BST is empty, else false. 
+ */
+bool BSTInt::empty() const 
+{
+  if (isize)
+    return false;
+  else
+    return true;
+}
+
+
+
+
+/** do a postorder traversal, deleting nodes
+ * This is a helper for the destructor
+ * This method is static because it acts on BSTNodeInts
+ *   and not on the BSTInt object directly.
+ */
+void BSTInt::deleteAll(BSTNodeInt* n)
+{
+    if (!n)
+      return;
+    deleteAll(n->left);
+    deleteAll(n->right);
+    delete n;
+}

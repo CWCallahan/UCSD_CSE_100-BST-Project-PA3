@@ -1,0 +1,151 @@
+Crystina Callahan (A13070475)
+
+Q1. What are all the files that are created when I type 'make bst' for the first time?
+
+BBSTNodeInt.o
+BSTInt.o
+testBST.o
+
+
+Q2: In the file BSTInt.cpp, remove the name scope from the insert function.   That is, 
+change the function header from
+
+bool BSTInt::insert(int item)
+
+to
+
+bool insert(int item)
+
+Copy and paste the error that results when you now compile the code into your 
+questions.txt file, and then explain what the error means and why it occurs.
+
+BSTInt.cpp:25:8: error: use of undeclared identifier 'root'
+  if (!root) {
+       ^
+BSTInt.cpp:26:5: error: use of undeclared identifier 'root'
+    root = new BSTNodeInt(item);
+    ^
+BSTInt.cpp:27:7: error: use of undeclared identifier 'isize'
+    ++isize;
+      ^
+BSTInt.cpp:31:22: error: use of undeclared identifier 'root'
+  BSTNodeInt* curr = root;
+                     ^
+BSTInt.cpp:56:5: error: use of undeclared identifier 'isize'
+  ++isize;
+    ^
+5 errors generated.
+
+These mean that the method no longer has access to the indicated variables. This is 
+because they are not declared in in BSTInt.cpp file and the compliler can no longer find
+the path to BSTInt.h where they are actually declared. 
+
+Q3: In a sentence or two, describe the bug in the code.  What function was it is, and what 
+    was it?
+	
+	The error was in insert.
+	The code ignored the case when there were less than two children or the current node
+	yet the new node still belonged deeper in the tree. In this case it would add 
+	the new node to the empty child space, which would be out of order.
+	
+
+Q4: In about a paragraph, describe the process you used to find an fix the bug.  
+    Include any tools you used and how you used them. If you were able to spot the bug by 
+    just looking at the code, describe your reasoning process in detail. We're not 
+    looking for the corrected code here (we already have that in your .cpp file).  
+    Rather we're looking for a description of your debugging process. Please be specific.
+    
+  - added 2 and 5 to the tree
+    - This made the find test fail for 100
+    - Now we know where the error occurs so we can identify the cause
+  - Ran through the insert logic
+    - check root seems correct
+    - the while loop travels down the tree as long as two children exist.
+    - This is conditionally fine as long as other cases are accounted for
+    - The next part tries to insert at this point, however there
+      is a case when a node can have a child and still not be the correct
+      place to insert. For example if we try to 1 into the
+      this tree bellow:   We get:    But should get:
+
+         5	              5    	       	 5
+	    / \		       	 / \   		    / \
+	   2   null	       	2   1  		   2   null
+	                                 	  / \
+	                               		 1   null
+    							      
+    - This can be remidied by adding a check for this case.
+  - Ran corrected code and a different node is now out of place.
+  - The inital correction did not work so a print method was made inside
+    of the node and called as each node was added so the tree could be 
+    seen
+  - Using this method the error was identified (comparison of child instead 
+    of curr)
+
+Output of parents of newly added nodes, giving enough data to draw the tree:
+
+Left is null	Right is: 4		Parent is root	Data is: 3
+Left is: 1		Right is: 4		Parent is root	Data is: 3
+Left is null	Right is: 100	parent is: 3	Data is: 4
+Left is: -33	Right is null	parent is: 3	Data is: 1
+Left is: -33	Right is: 2		parent is: 3	Data is: 1
+Left is: 5		Right is: 100	parent is: 3	Data is: 4
+
+  - The error was corrected and insert and find now work!
+  - See the output table bellow:
+
+Left is null	Right is: 4		Parent is root	Data is: 3
+Left is: 1		Right is: 4		Parent is root	Data is: 3
+Left is null	Right is: 100	parent is: 3	Data is: 4
+Left is: -33	Right is null	parent is: 3	Data is: 1
+Left is: -33	Right is: 2		parent is: 3	Data is: 1
+Left is: 5		Right is null	parent is: 4	Data is: 100
+    
+Q5: Look at header for the insert method in the BST.hpp and compare it to the header of 
+    the insert method in BSTInt.h.  For each class state whether the insert method passes 
+    its argument by value or by reference.  Explain why each method probably uses the 
+    method that it uses (i.e. if pass by value, explain why not pass by reference, and 
+    if pass by reference, explain why not pass by value).
+    
+    The header of BST.hpp:
+     - is included in the same file as the method definitions 
+     - contains a typedef for the iterator 
+     - Includes BSTIteratror
+    
+    The header of BSTInt.h:
+     - Is in it's own file
+     - doesn't a have any additional features compared to BST.hpp
+    
+    Both headers:
+     - public and private declaration areas
+     - many functions are declared the same
+
+Q6: Which input file produces taller trees (sorted or random)? 
+
+    random produces a height of 32 while the sorted produces a height of 11793.
+    This is because the sorted names are added in a straight line with no branching 
+    producing the tallest possible tree.
+
+Q7: Research on your own the height you would expect for the tree produced by the sorted 
+    input and for the tree produced by the random input.  Give the approximate height you 
+    would expect for each tree based on the size of the tree, N.  Then build the tree for 
+    different sizes of sorted and randomly ordered input, report your results, and comment 
+    on whether what you see matches your expectations.  Be sure to cite your source for 
+    the heights you expect.
+    
+    Many elements of this questions are included in the answer to Q6.
+    Theoretically the minimum height for a bst would be log(n), because each row consumes 
+    2*(number of possible entries in last row) in the full case and the maximum height 
+    would be n-1 because this would be a series of single sibling nodes and also because 
+    the root has height 0. The maximum case should be expected for the sorted becuase 
+    the ordered nature means that each node will be inserted as the child of the most 
+    recently inserted node, this is confirmed by the program output listed in Q6. This 
+    also means that the minimum height would be 14 which is noticeably smaller than the
+    random height. This is because the random input does typically not produce a full or 
+    complete tree. A random tree should typically be closer to the average value. The 
+    average value can be determined experimentally and fit with a function as was done 
+    here: http://stackoverflow.com/questions/861393/average-height-of-a-binary-search-tree
+    yeilding the formula: 4.311 * ln(N) - 1.953 ln(ln(N)) -3, which gives us an expected 
+    height value of 33. In the case of a source a root was considered to have height 1 
+    so this is actually identical to our experimental value of 32 where a root is 
+    considered to have height 0.
+    
