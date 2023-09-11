@@ -5,8 +5,8 @@
 #include <iostream>
 
 /* Header file for a BST class that holds ints.  You are welcome to add methods and variables */
-/* Author: Christine Alvarado 
- * Author: Crystina Callahan (A13070475)
+/* Authors: Christine Alvarado 
+ *          Crystina Callahan (A13070475)
  */
 
 class BSTInt {
